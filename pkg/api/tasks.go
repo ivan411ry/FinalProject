@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+const TasksLimit = 50
+
 type TasksResp struct {
 	Tasks []*db.Task `json:"tasks"`
 }
@@ -16,7 +18,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := db.Tasks(50)
+	tasks, err := db.Tasks(TasksLimit)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		writeJSON(w, map[string]string{"error": "database error"})

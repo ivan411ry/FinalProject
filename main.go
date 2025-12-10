@@ -3,6 +3,7 @@ package main
 import (
 	"FinalProject/pkg/api"
 	"FinalProject/pkg/db"
+	"log"
 
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	api.Init()
 
@@ -26,6 +28,7 @@ func main() {
 	}
 
 	http.Handle("/", http.FileServer(http.Dir("./web")))
+	log.Printf("Server starting on port %s", port)
 	err = http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		panic(err)

@@ -4,6 +4,7 @@ import (
 	"FinalProject/pkg/db"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,7 +12,9 @@ import (
 
 func writeJSON(w http.ResponseWriter, data any) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("writeJSON error: %v", err)
+	}
 }
 
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,10 +57,10 @@ func checkDate(task *db.Task) error {
 	now := time.Now()
 
 	if task.Date == "" {
-		task.Date = now.Format("20060102")
+		task.Date = now.Format(DateFormat)
 	}
 
-	t, err := time.Parse("20060102", task.Date)
+	t, err := time.Parse(DateFormat, task.Date)
 	if err != nil {
 		return errors.New("invalid data format")
 	}
@@ -73,7 +76,7 @@ func checkDate(task *db.Task) error {
 		}
 	} else {
 		if afterNow(now, t) {
-			task.Date = now.Format("20060102")
+			task.Date = now.Format(DateFormat)
 		}
 	}
 
